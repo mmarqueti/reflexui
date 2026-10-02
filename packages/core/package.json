@@ -1,0 +1,10 @@
+{
+  "name": "@reflexui/core",
+  "version": "0.0.0",
+  "description": "Headless core: items, signals, typed questions, policy and composition.",
+  "license": "MIT",
+  "type": "module",
+  "main": "./src/index.ts",
+  "types": "./src/index.ts",
+  "sideEffects": false
+}

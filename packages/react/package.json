@@ -1,0 +1,15 @@
+{
+  "name": "@reflexui/react",
+  "version": "0.0.0",
+  "description": "Headless React bindings: useAdaptiveSurface, feedback, debug panel.",
+  "license": "MIT",
+  "type": "module",
+  "main": "./src/index.ts",
+  "types": "./src/index.ts",
+  "dependencies": {
+    "@reflexui/core": "workspace:*"
+  },
+  "peerDependencies": {
+    "react": ">=18"
+  }
+}

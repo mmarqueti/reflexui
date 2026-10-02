@@ -1,0 +1,12 @@
+{
+  "name": "@reflexui/replay",
+  "version": "0.0.0",
+  "description": "Offline replay over labeled history: hit rate vs default order, latency, cost.",
+  "license": "MIT",
+  "type": "module",
+  "main": "./src/index.ts",
+  "types": "./src/index.ts",
+  "dependencies": {
+    "@reflexui/core": "workspace:*"
+  }
+}

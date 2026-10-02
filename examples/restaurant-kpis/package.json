@@ -1,0 +1,11 @@
+{
+  "name": "example-restaurant-kpis",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "dependencies": {
+    "@reflexui/core": "workspace:*",
+    "@reflexui/providers": "workspace:*",
+    "@reflexui/react": "workspace:*"
+  }
+}

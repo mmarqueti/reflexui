@@ -1,0 +1,13 @@
+{
+  "extends": "./tsconfig.base.json",
+  "compilerOptions": {
+    "baseUrl": ".",
+    "paths": {
+      "@reflexui/core": ["packages/core/src/index.ts"],
+      "@reflexui/providers": ["packages/providers/src/index.ts"],
+      "@reflexui/react": ["packages/react/src/index.ts"],
+      "@reflexui/replay": ["packages/replay/src/index.ts"]
+    }
+  },
+  "include": ["packages/*/src", "examples/*/src"]
+}

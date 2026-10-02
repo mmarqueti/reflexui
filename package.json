@@ -1,0 +1,21 @@
+{
+  "name": "reflexui",
+  "private": true,
+  "version": "0.0.0",
+  "description": "Screens that rearrange themselves around what matters right now, decided by a fast typed-judgment model (Jev) and governed by your code.",
+  "license": "MIT",
+  "type": "module",
+  "packageManager": "pnpm@10.28.0",
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "build": "pnpm -r build",
+    "test": "pnpm -r test"
+  },
+  "devDependencies": {
+    "@types/react": "^19.0.0",
+    "typescript": "^5.6.0"
+  }
+}

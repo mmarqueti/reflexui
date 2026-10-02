@@ -1,0 +1,10 @@
+{
+  "name": "example-saas-dashboard",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "dependencies": {
+    "@reflexui/core": "workspace:*",
+    "@reflexui/providers": "workspace:*"
+  }
+}
