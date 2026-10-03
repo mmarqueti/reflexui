@@ -12,10 +12,14 @@
   "scripts": {
     "typecheck": "tsc -p tsconfig.json --noEmit",
     "build": "pnpm -r build",
-    "test": "pnpm -r test"
+    "test": "pnpm -r test",
+    "release": "pnpm build && changeset publish",
+    "changeset": "changeset"
   },
   "devDependencies": {
+    "@changesets/cli": "^3.0.3",
     "@types/react": "^19.0.0",
+    "tsup": "^8.5.1",
     "typescript": "^5.6.0"
   }
 }

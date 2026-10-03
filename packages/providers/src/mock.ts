@@ -1,4 +1,4 @@
-import type { Answer, Decider, EvaluateRequest, EvaluateResult } from "@reflexui/core";
+import type { Answer, Decider, EvaluateRequest, EvaluateResult } from "@reflexui-jev/core";
 
 /** Stable pseudo-random number in [0, 1) from a string. */
 function hash01(input: string): number {

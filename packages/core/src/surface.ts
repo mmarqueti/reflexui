@@ -1,6 +1,6 @@
 import type { Policy, Surface, SurfaceDefinition } from "./types";
 
-/** Conservative defaults. Calibrate them with @reflexui/replay. */
+/** Conservative defaults. Calibrate them with @reflexui-jev/replay. */
 export const defaultPolicy: Policy = {
   minScore: 1.0,
   minConfidence: 0.6,

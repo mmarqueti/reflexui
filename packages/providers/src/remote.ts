@@ -1,4 +1,4 @@
-import type { Decider } from "@reflexui/core";
+import type { Decider } from "@reflexui-jev/core";
 
 const planned = (name: string, milestone: string): Decider => ({
   name,

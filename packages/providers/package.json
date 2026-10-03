@@ -1,12 +1,46 @@
 {
-  "name": "@reflexui/providers",
-  "version": "0.0.0",
+  "name": "@reflexui-jev/providers",
+  "version": "0.1.0",
   "description": "Deciders: Jev via TypeSafe, Cloudflare or OpenRouter; LLM fallback; deterministic mock.",
   "license": "MIT",
   "type": "module",
-  "main": "./src/index.ts",
-  "types": "./src/index.ts",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
   "dependencies": {
-    "@reflexui/core": "workspace:*"
+    "@reflexui-jev/core": "workspace:*"
+  },
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    }
+  },
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE"
+  ],
+  "sideEffects": false,
+  "keywords": [
+    "reflexui",
+    "adaptive-ui",
+    "headless",
+    "typescript"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/mmarqueti/reflexui.git",
+    "directory": "packages/providers"
+  },
+  "homepage": "https://github.com/mmarqueti/reflexui#readme",
+  "bugs": {
+    "url": "https://github.com/mmarqueti/reflexui/issues"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "scripts": {
+    "build": "tsup",
+    "prepublishOnly": "pnpm build"
   }
 }

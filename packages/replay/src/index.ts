@@ -1,4 +1,4 @@
-import type { Decider, Surface } from "@reflexui/core";
+import type { Decider, Surface } from "@reflexui-jev/core";
 
 /** One labeled moment: the context at that time + what a human wanted on top. */
 export interface ReplayCase<Ctx> {

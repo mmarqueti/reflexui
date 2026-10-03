@@ -1,4 +1,4 @@
-# @reflexui/react
+# @reflexui-jev/react
 
 Headless React bindings. You render the cards; the hook tells you which, in what order, and why.
 

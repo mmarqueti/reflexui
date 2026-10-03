@@ -3,10 +3,10 @@
   "compilerOptions": {
     "baseUrl": ".",
     "paths": {
-      "@reflexui/core": ["packages/core/src/index.ts"],
-      "@reflexui/providers": ["packages/providers/src/index.ts"],
-      "@reflexui/react": ["packages/react/src/index.ts"],
-      "@reflexui/replay": ["packages/replay/src/index.ts"]
+      "@reflexui-jev/core": ["packages/core/src/index.ts"],
+      "@reflexui-jev/providers": ["packages/providers/src/index.ts"],
+      "@reflexui-jev/react": ["packages/react/src/index.ts"],
+      "@reflexui-jev/replay": ["packages/replay/src/index.ts"]
     }
   },
   "include": ["packages/*/src", "examples/*/src"]

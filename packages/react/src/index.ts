@@ -1,5 +1,5 @@
 import { useState } from "react";
-import type { Decision } from "@reflexui/core";
+import type { Decision } from "@reflexui-jev/core";
 
 export interface UseAdaptiveSurfaceOptions {
   surfaceId: string;

@@ -1,8 +1,8 @@
 /**
- * Restaurant KPI home. Public, anonymized version of the first production
- * case (Toqan for Restaurants). All data here is fictitious.
+ * Restaurant KPI home for a fictitious restaurant-management assistant
+ * ("Mesa Boa"). All data here is fictitious.
  */
-import { defineSurface, type SurfaceItem } from "@reflexui/core";
+import { defineSurface, type SurfaceItem } from "@reflexui-jev/core";
 import { chatSignal, metricsSignal, navigationSignal, reviewsSignal } from "./signals";
 
 export interface RestaurantCtx {

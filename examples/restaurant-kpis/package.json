@@ -4,8 +4,8 @@
   "version": "0.0.0",
   "type": "module",
   "dependencies": {
-    "@reflexui/core": "workspace:*",
-    "@reflexui/providers": "workspace:*",
-    "@reflexui/react": "workspace:*"
+    "@reflexui-jev/core": "workspace:*",
+    "@reflexui-jev/providers": "workspace:*",
+    "@reflexui-jev/react": "workspace:*"
   }
 }

@@ -1,4 +1,4 @@
-# @reflexui/providers
+# @reflexui-jev/providers
 
 Implementations of the `Decider` interface.
 

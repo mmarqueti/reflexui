@@ -19,7 +19,6 @@ A fast typed-judgment model decides *what* is relevant; your code decides *what 
 - [Examples](#examples)
 - [Design principles](#design-principles)
 - [Roadmap](#roadmap)
-- [First production case](#first-production-case)
 - [Privacy](#privacy)
 - [Contributing](#contributing) · [License](#license) · [Prior art](#prior-art)
 
@@ -87,7 +86,7 @@ Full reference: [docs/concepts.md](docs/concepts.md).
 ## A quick look
 
 ```ts
-import { defineSurface } from "@reflexui/core";
+import { defineSurface } from "@reflexui-jev/core";
 
 export const home = defineSurface<RestaurantCtx>({
   id: "restaurant-home",
@@ -117,8 +116,8 @@ export const home = defineSurface<RestaurantCtx>({
 On the server (planned API, milestone M1):
 
 ```ts
-import { decide, MemoryStore } from "@reflexui/core";
-import { cloudflareDecider } from "@reflexui/providers";
+import { decide, MemoryStore } from "@reflexui-jev/core";
+import { cloudflareDecider } from "@reflexui-jev/providers";
 
 const { immediate, fresh } = decide({
   surface: home, ctx, subjectId: ctx.restaurantId,
@@ -132,14 +131,24 @@ On the client (planned API, milestone M1):
 const { decision, feedback } = useAdaptiveSurface({ surfaceId: "restaurant-home", subjectId, endpoint: "/api/surface" });
 ```
 
+## Install
+
+Pre-alpha: published under the `alpha` dist-tag.
+
+```sh
+pnpm add @reflexui-jev/core@alpha
+pnpm add @reflexui-jev/providers@alpha   # optional: deciders
+pnpm add @reflexui-jev/react@alpha react # optional: React bindings
+```
+
 ## Packages
 
 | Package | Purpose | Status |
 | --- | --- | --- |
-| [`@reflexui/core`](packages/core) | Types, question builders, `defineSurface`, policy, `compose`, `decide`, stores | Types ready · logic M1 |
-| [`@reflexui/providers`](packages/providers) | Deciders for TypeSafe, Cloudflare, OpenRouter, an LLM fallback, and a deterministic mock | Mock ready · remote M0–M1 |
-| [`@reflexui/react`](packages/react) | Headless `useAdaptiveSurface`, feedback, debug panel | M1 |
-| [`@reflexui/replay`](packages/replay) | Offline replay: hit rate vs default order, latency, cost | M2 |
+| [`@reflexui-jev/core`](packages/core) | Types, question builders, `defineSurface`, policy, `compose`, `decide`, stores | Types ready · logic M1 |
+| [`@reflexui-jev/providers`](packages/providers) | Deciders for TypeSafe, Cloudflare, OpenRouter, an LLM fallback, and a deterministic mock | Mock ready · remote M0–M1 |
+| [`@reflexui-jev/react`](packages/react) | Headless `useAdaptiveSurface`, feedback, debug panel | M1 |
+| [`@reflexui-jev/replay`](packages/replay) | Offline replay: hit rate vs default order, latency, cost | M2 |
 
 ## Providers
 
@@ -182,13 +191,6 @@ More: [docs/writing-questions.md](docs/writing-questions.md) · [docs/architectu
 | **M2** Replay | `runReplay`, labeling format, report | Report shows hit rate vs default order |
 | **M3** First production case | Integration behind a flag, feedback, logs | p95 ≤ 500 ms, no instability complaints |
 | **M4** Field test | A/B against the static screen | Decision: ship, adjust or stop |
-
-## First production case
-
-The first real-world use is the home of **Toqan for Restaurants**, a restaurant-management
-assistant that connects delivery and dining room, reviews and competition. The Toqan
-integration (real KPI catalog, data connectors, chat history) lives in a **private package**;
-`examples/restaurant-kpis` is an anonymized version of it with fictitious data.
 
 ## Privacy
 

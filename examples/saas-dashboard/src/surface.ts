@@ -2,7 +2,7 @@
  * Second domain, kept small on purpose: proves the core carries no
  * restaurant concepts. A B2B SaaS admin dashboard.
  */
-import { defineSurface } from "@reflexui/core";
+import { defineSurface } from "@reflexui-jev/core";
 
 export interface WorkspaceCtx {
   workspaceId: string;

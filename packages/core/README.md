@@ -1,4 +1,4 @@
-# @reflexui/core
+# @reflexui-jev/core
 
 Headless, domain-free core.
 

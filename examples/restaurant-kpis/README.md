@@ -1,6 +1,6 @@
 # Example: restaurant KPI home
 
-Anonymized version of the first production case (Toqan for Restaurants). All data is fictitious.
+Example of a restaurant-management assistant ("Mesa Boa"). The product and all data are fictitious.
 
 | File | Contents |
 | --- | --- |

@@ -1,4 +1,4 @@
-# @reflexui/replay
+# @reflexui-jev/replay
 
 Offline evaluation over labeled history. The go/no-go gate before users see anything.
 

@@ -3,7 +3,7 @@
  * a real integration replaces `fixtures` with its own data access.
  * Rule of thumb: compute numbers and dates here, send the model short text.
  */
-import type { SignalProvider } from "@reflexui/core";
+import type { SignalProvider } from "@reflexui-jev/core";
 import { fixtures } from "./fixtures";
 import type { RestaurantCtx } from "./surface";
 
