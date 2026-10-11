@@ -242,7 +242,7 @@ docs/
 
 | Package | Purpose | Status |
 | --- | --- | --- |
-| [`@reflexui-jev/core`](packages/core) | Types, question builders, `defineSurface`, policy, `compose`, `decide`, stores | Ready (M1 core) |
+| [`@reflexui-jev/core`](packages/core) | Types, question builders, `defineSurface`, policy, `compose`, `decide`, stores | Ready |
 | [`@reflexui-jev/providers`](packages/providers) | Deciders: Jev via the TypeSafe API, and a deterministic mock | Ready |
 | [`@reflexui-jev/react`](packages/react) | Headless `useAdaptiveSurface`, feedback helpers and `<DebugPanel>` | Ready |
 | [`@reflexui-jev/replay`](packages/replay) | Offline replay: hit rate vs default order, latency, cost | Ready |
@@ -433,13 +433,24 @@ CI (`.github/workflows/ci.yml`) runs `pnpm install --frozen-lockfile`, `pnpm typ
 
 ## Roadmap
 
-| Milestone | Scope | Exit criterion |
+| Milestone | Scope | Status |
 | --- | --- | --- |
-| **M0** Access | Remote decider for Jev (TypeSafe API) | Real answers from Jev in an integration test. **Done** |
-| **M1** Core + mock demo | `compose`, `decide`, `buildRequests`, React hook, restaurant demo | Demo runs with `mockDecider`, no API key. **Done** |
-| **M2** Replay | `runReplay`, labeling format, report | Report shows hit rate vs default order. **Done**; see [docs/replay.md](docs/replay.md) |
-| **M3** First production case | Integration behind a flag, feedback, logs | p95 ≤ 500 ms, no instability complaints |
-| **M4** Field test | A/B against the static screen | Decision: ship, adjust, or stop |
+| **M0** Access | `typesafeDecider`: Jev through the TypeSafe API | **Done.** Validated against the real API (manual runs and the replay script). No automated test in CI, since it would need a key |
+| **M1** Core | `defineSurface`, `compose`, `decide`, `buildRequests`, `decisionStream`, feedback demotion, `useAdaptiveSurface` and `<DebugPanel>`, Redis stores | **Done.** Covered by tests; `0.2.0` is on npm |
+| **M2** Replay | `runReplay`, labeling format, report, threshold sweeps | **Done.** See [docs/replay.md](docs/replay.md). It still needs real labeled cases to calibrate the defaults |
+| **M3** First real-world case | Integration behind a flag, feedback, logs | **Next.** Exit criterion: p95 ≤ 500 ms and no instability complaints (end to end we measured about 300 to 700 ms with Jev) |
+| **M4** Field test | A/B against the static screen | **Later.** Decision: ship, adjust, or stop |
+
+### Known gaps
+
+- **Defaults are not calibrated.** `minConfidence`, `alertThreshold` and the other policy values are educated guesses until
+  you run replay on your own labeled cases. In our tests Jev's confidence varied a lot (about 0.45 to 0.97) and some
+  alerts landed right on the threshold.
+- **The last fallback step is yours.** The chain is cached decision, then `defaultOrder`; a static screen when even that is
+  unavailable is up to your app.
+- **Only Jev (TypeSafe) and a mock decider ship today.** The `Decider` interface is two lines, so adding another backend
+  is a small adapter, but none is included.
+- **The examples in `examples/` are definitions and fixtures.** For something runnable, use the [Quick start](#quick-start).
 
 ---
 
