@@ -169,7 +169,7 @@ The two model calls run in parallel. Each receives only the signals its question
 | **Item** | A `card`, an `alert`, or a `suggestion`, with an eligibility rule and reason templates | `SurfaceItem` |
 | **Signal** | A provider that turns raw data into a short, model-ready snapshot + structured facts | `SignalProvider` |
 | **Question** | A typed question: `score` (rubric), `choice` (options), or `noul` (yes/no probability) | `score()`, `choice()`, `noul()` |
-| **Decider** | Anything that answers typed questions: Jev via a gateway, an LLM, a mock | `Decider` |
+| **Decider** | Anything that answers typed questions: Jev via TypeSafe, a mock, or your own implementation | `Decider` |
 | **Policy** | Thresholds and stability rules, all in code | `Policy`, `defaultPolicy` |
 | **Decision** | What to render: fixed ids, ranked adaptive items, at most one alert, suggestions, reasons | `Decision` |
 | **Replay** | Run the surface over labeled history and compare with the default order | `runReplay()` |
@@ -183,7 +183,7 @@ Full reference: [docs/concepts.md](docs/concepts.md).
 ```
 packages/
   core/          # Types, questions, defineSurface, policy, compose, decide, stores
-  providers/     # Deciders: mock, TypeSafe, Cloudflare, OpenRouter, LLM fallback
+  providers/     # Deciders: TypeSafe (Jev) and a deterministic mock
   react/         # Headless useAdaptiveSurface + feedback
   replay/        # Offline replay over labeled history
 examples/
@@ -204,7 +204,7 @@ docs/
 | Package | Purpose | Status |
 | --- | --- | --- |
 | [`@reflexui-jev/core`](packages/core) | Types, question builders, `defineSurface`, policy, `compose`, `decide`, stores | Ready (M1 core) |
-| [`@reflexui-jev/providers`](packages/providers) | Deciders for TypeSafe, Cloudflare, OpenRouter, an LLM fallback, and a deterministic mock | TypeSafe + mock ready · other remote deciders M0–M1 |
+| [`@reflexui-jev/providers`](packages/providers) | Deciders: Jev via the TypeSafe API, and a deterministic mock | Ready |
 | [`@reflexui-jev/react`](packages/react) | Headless `useAdaptiveSurface` and feedback helpers | Ready (debug panel planned) |
 | [`@reflexui-jev/replay`](packages/replay) | Offline replay: hit rate vs default order, latency, cost | Ready |
 
@@ -300,18 +300,15 @@ const decision = defaultDecision(home, ctx, subjectId, Date.now());
 
 ## Configuration
 
-Copy [`.env.example`](.env.example) and fill in **at most one** provider. Without any key, use `mockDecider()`.
+Copy [`.env.example`](.env.example) and set your TypeSafe key. Without it, use `mockDecider()`.
 
 ```bash
 cp .env.example .env
 ```
 
-| Variable | Provider | Notes |
+| Variable | Used by | Notes |
 | --- | --- | --- |
-| `TYPESAFE_API_KEY` | `typesafeDecider` | TypeSafe direct (early access) |
-| `CLOUDFLARE_ACCOUNT_ID` + `CLOUDFLARE_API_TOKEN` | `cloudflareDecider` | Workers AI model `typesafe/jev` |
-| `OPENROUTER_API_KEY` | `openrouterDecider` | Model `typesafe/jev-1.13` |
-| `LLM_API_KEY` | — | Documented for an LLM fallback; `llmDecider` takes a `generateObject` function in code |
+| `TYPESAFE_API_KEY` | `typesafeDecider` | Jev through the TypeSafe API (early access). Read from `process.env`, or pass `apiKey` |
 
 Never commit `.env`. Replay datasets under `replay-data/` are git-ignored on purpose.
 
@@ -323,9 +320,17 @@ Never commit `.env`. Replay datasets under `replay-data/` are git-ignored on pur
 | --- | --- | --- |
 | `mockDecider` | Deterministic hash | Ready — runs examples and tests with no API key |
 | `typesafeDecider` | Jev (TypeSafe direct) | Ready: `POST /v1/systemone`, retries, timeout |
-| `cloudflareDecider` | `typesafe/jev` on Workers AI | M0 (stub) |
-| `openrouterDecider` | `typesafe/jev-1.13` | M1 (stub) |
-| `llmDecider` | Any LLM with structured output | M1 (stub); slower, uncalibrated |
+
+```ts
+import { typesafeDecider } from "@reflexui-jev/providers";
+
+const decider = typesafeDecider({
+  // all optional
+  apiKey: process.env.TYPESAFE_API_KEY, // default
+  model: "jev-1.13.0",                  // default "jev-latest"; pin it in production
+  maxRetries: 2,                        // on 429/529 and network errors, with backoff
+});
+```
 
 ```ts
 import { mockDecider } from "@reflexui-jev/providers";
@@ -336,6 +341,8 @@ const decider = mockDecider({
   latencyMs: 0,
 });
 ```
+
+Another backend? A decider is just `{ name, evaluate(request) }` (the `Decider` interface from `@reflexui-jev/core`), so you can plug in your own.
 
 ---
 
@@ -386,7 +393,7 @@ CI (`.github/workflows/ci.yml`) runs `pnpm install --frozen-lockfile`, `pnpm typ
 
 | Milestone | Scope | Exit criterion |
 | --- | --- | --- |
-| **M0** Access | Remote deciders for TypeSafe and Cloudflare | Real answers from Jev in an integration test. **TypeSafe done**; Cloudflare pending |
+| **M0** Access | Remote decider for Jev (TypeSafe API) | Real answers from Jev in an integration test. **Done** |
 | **M1** Core + mock demo | `compose`, `decide`, `buildRequests`, React hook, restaurant demo | Demo runs with `mockDecider`, no API key. **Core and React hook done**; debug panel pending |
 | **M2** Replay | `runReplay`, labeling format, report | Report shows hit rate vs default order. **Done**; see [docs/replay.md](docs/replay.md) |
 | **M3** First production case | Integration behind a flag, feedback, logs | p95 ≤ 500 ms, no instability complaints |
@@ -398,7 +405,7 @@ CI (`.github/workflows/ci.yml`) runs `pnpm install --frozen-lockfile`, `pnpm typ
 
 - Signals are summarized **before** leaving your system; send the smallest useful context.
 - Remove personal data (names, phones, emails, tax ids, addresses) from chat and reviews first.
-- Prefer providers with zero data retention.
+- Check the retention terms of your Jev provider.
 - Replay datasets are git-ignored (`replay-data/`). Never commit real customer data.
 
 Details: [docs/privacy.md](docs/privacy.md).

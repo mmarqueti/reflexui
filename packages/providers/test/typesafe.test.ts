@@ -1,6 +1,6 @@
 import { describe, expect, it, vi } from "vitest";
 import { choice, noul, score } from "@reflexui-jev/core";
-import { typesafeDecider } from "../src/remote";
+import { typesafeDecider } from "../src/typesafe";
 
 const okBody = {
   model: "jev-1.13.0",

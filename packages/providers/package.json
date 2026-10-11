@@ -1,7 +1,7 @@
 {
   "name": "@reflexui-jev/providers",
   "version": "0.1.0",
-  "description": "Deciders: Jev via TypeSafe, Cloudflare or OpenRouter; LLM fallback; deterministic mock.",
+  "description": "Deciders: Jev via the TypeSafe API and a deterministic mock.",
   "license": "MIT",
   "type": "module",
   "main": "./dist/index.js",

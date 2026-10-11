@@ -1,12 +1,5 @@
 import type { Answer, Decider, EvaluateRequest, EvaluateResult, Question } from "@reflexui-jev/core";
 
-const planned = (name: string, milestone: string): Decider => ({
-  name,
-  async evaluate() {
-    throw new Error(`${name} decider: not implemented yet (${milestone})`);
-  },
-});
-
 export interface TypeSafeOptions {
   apiKey?: string; // defaults to process.env.TYPESAFE_API_KEY
   model?: string; // defaults to "jev-latest"; pin it in production, e.g. "jev-1.13.0"
@@ -89,38 +82,4 @@ export function typesafeDecider(options: TypeSafeOptions = {}): Decider {
       }
     },
   };
-}
-
-export interface CloudflareOptions {
-  accountId?: string;
-  apiToken?: string;
-  model?: string; // defaults to "typesafe/jev"
-}
-
-/** Jev through Cloudflare Workers AI (zero data retention). */
-export function cloudflareDecider(_options: CloudflareOptions = {}): Decider {
-  return planned("cloudflare", "milestone M0");
-}
-
-export interface OpenRouterOptions {
-  apiKey?: string;
-  model?: string; // defaults to "typesafe/jev-1.13"
-}
-
-/** Jev through OpenRouter's Decisions API. */
-export function openrouterDecider(_options: OpenRouterOptions = {}): Decider {
-  return planned("openrouter", "milestone M1");
-}
-
-export interface LlmOptions {
-  /** Any function that returns JSON for a prompt + JSON schema. */
-  generateObject: (args: { prompt: string; schema: unknown }) => Promise<unknown>;
-}
-
-/**
- * Fallback for teams without Jev access: maps typed questions to a structured
- * LLM call. Slower and without calibrated confidence; useful for development.
- */
-export function llmDecider(_options: LlmOptions): Decider {
-  return planned("llm", "milestone M1");
 }
