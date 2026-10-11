@@ -1,15 +1,30 @@
+<div align="center">
+
 # reflexui
 
-[![npm](https://img.shields.io/npm/v/@reflexui-jev/core.svg)](https://www.npmjs.com/package/@reflexui-jev/core)
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
-[![TypeScript](https://img.shields.io/badge/TypeScript-5.x-3178C6.svg?logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
+**Adaptive, explainable screens driven by fast typed-judgment models.**
+
+Interfaces that rearrange themselves around what matters right now.
+A System One model ([Jev](https://typesafe.ai/blog/introducing-system-one-models-and-jev)) decides *what is relevant*;
+your code decides *what is allowed*.
+
+[![CI](https://github.com/mmarqueti/reflexui/actions/workflows/ci.yml/badge.svg)](https://github.com/mmarqueti/reflexui/actions/workflows/ci.yml)
+[![npm](https://img.shields.io/npm/v/@reflexui-jev/core/alpha?label=npm%20%28alpha%29&color=cb3837)](https://www.npmjs.com/package/@reflexui-jev/core)
+[![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
+[![TypeScript](https://img.shields.io/badge/TypeScript-strict-3178c6.svg)](https://www.typescriptlang.org/)
+[![Status: pre-alpha](https://img.shields.io/badge/status-pre--alpha-orange.svg)](#roadmap)
 [![Node.js](https://img.shields.io/badge/Node.js-%3E%3D20-339933.svg?logo=node.js&logoColor=white)](https://nodejs.org/)
+[![PRs welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](CONTRIBUTING.md)
 
-**Adaptive screens powered by Jev.** Screens that rearrange themselves around what matters right now, by reflex. A fast typed-judgment model decides *what* is relevant; your code decides *what is allowed*.
+<sub>`adaptive-ui` · `personalization` · `generative-ui` · `dashboards` · `llm` · `system-one` · `jev` · `react` · `typescript` · `headless`</sub>
 
-> **Status: pre-alpha.** This repository contains the structure, the types, and the design.
-> Most orchestration functions are stubs that throw `not implemented yet (milestone Mx)`.
-> See [Roadmap](#roadmap).
+[Quick start](#quick-start) · [Why](#why) · [How it works](#how-it-works) · [Quick look](#a-quick-look) · [Packages](#packages) · [Roadmap](#roadmap) · [Contributing](#contributing)
+
+</div>
+
+> **Status: pre-alpha.** This repository contains the structure, the types and the design.
+> Most functions are stubs that throw `not implemented yet (milestone Mx)`. The API may change
+> between releases. See the [Roadmap](#roadmap).
 
 ---
 
