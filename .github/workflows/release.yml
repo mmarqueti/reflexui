@@ -25,3 +25,7 @@ jobs:
           version: pnpm changeset version
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          # Optional: a granular npm token. Without it the publish uses npm trusted publishing (OIDC),
+          # which needs a trusted publisher configured on npmjs.com for every package.
+          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
