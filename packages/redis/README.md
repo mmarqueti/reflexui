@@ -1,6 +1,6 @@
 # @reflexui-jev/redis
 
-Redis-backed stores for reflexui. `MemoryStore` lives inside one process; with several instances or serverless
+Redis-backed stores for reflexui (the full reasoning is in [docs/redis.md](../../docs/redis.md)). `MemoryStore` lives inside one process; with several instances or serverless
 functions every visit would start from the default order and "not useful" feedback would be lost.
 These stores keep both in Redis so all instances agree.
 

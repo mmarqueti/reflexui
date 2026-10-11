@@ -195,6 +195,7 @@ docs/
   writing-questions.md
   privacy.md
   replay.md
+  redis.md
 ```
 
 ---
@@ -274,7 +275,7 @@ const { immediate, fresh, trace } = await decide({
 // `await trace` adds the scoreboard and raw model I/O for debug panels.
 ```
 
-`MemoryStore` is for demos and tests: it lives in one process. In production, with several instances or serverless functions, use `redisStore` and `redisFeedbackStore` from [`@reflexui-jev/redis`](packages/redis) so the cache, the pins and the "not useful" feedback are shared.
+`MemoryStore` is for demos and tests: it lives in one process. In production, with several instances or serverless functions, use `redisStore` and `redisFeedbackStore` from [`@reflexui-jev/redis`](packages/redis) so the cache, the pins and the "not useful" feedback are shared. Why this matters: [docs/redis.md](docs/redis.md).
 
 ### Consume on the client
 
