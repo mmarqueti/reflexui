@@ -1,6 +1,6 @@
 {
   "name": "@reflexui-jev/redis",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Redis-backed DecisionStore and FeedbackStore for reflexui. Works with ioredis and node-redis.",
   "license": "MIT",
   "type": "module",

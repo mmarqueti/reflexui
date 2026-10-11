@@ -1,6 +1,6 @@
 {
   "name": "@reflexui-jev/replay",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Offline replay over labeled history: hit rate vs default order, latency, cost.",
   "license": "MIT",
   "type": "module",
