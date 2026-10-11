@@ -395,7 +395,11 @@ Another backend? A decider is just `{ name, evaluate(request) }` (the `Decider` 
 | [`examples/restaurant-kpis`](examples/restaurant-kpis) | Restaurant owner home | 19 cards, 5 alerts, 6 suggestions; 3 fictitious restaurants (delivery-first, dine-in bistro, 3-unit chain) |
 | [`examples/saas-dashboard`](examples/saas-dashboard) | B2B SaaS admin home | Same core, different domain — proof that nothing is restaurant-specific |
 
-These two define surfaces and fixtures. For something you can run, start with the [Quick start](#quick-start).
+These two define surfaces and fixtures. For something you can run:
+
+- the [Quick start](#quick-start) (one file, no API key), and
+- [**reflexui-example**](https://github.com/mmarqueti/reflexui-example): a Next.js playground with 5 mocked people, 20 dashboard
+  components, the real Jev API, `useAdaptiveSurface`, `<DebugPanel>`, "not useful" feedback and a replay script. It needs a Jev key.
 
 ---
 
