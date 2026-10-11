@@ -31,6 +31,7 @@ your code decides *what is allowed*.
 ## Contents
 
 - [Overview](#overview)
+- [How it differs from similar projects](#how-it-differs-from-similar-projects)
 - [Quick start](#quick-start)
 - [Why](#why)
 - [How it works](#how-it-works)
@@ -64,6 +65,23 @@ Goal: screens that adapt to the moment, never show invented content, and never b
 | **Package manager** | pnpm 10 |
 | **License** | MIT |
 | **Published packages** | `@reflexui-jev/core`, `@reflexui-jev/providers`, `@reflexui-jev/react`, `@reflexui-jev/replay` |
+
+---
+
+## How it differs from similar projects
+
+Projects such as [json-render + Jev](https://json-render.dev/docs/jev) and [jev-ui](https://github.com/etweisberg/jev-ui) use Jev to pick among candidates at render time: which spec to compose, or which branch, rank or gate to show. reflexui builds on the same idea and focuses on the part around the model call:
+
+| | Typical Jev integration | reflexui |
+| --- | --- | --- |
+| **Unit of decision** | One component or spec, at render time | A whole surface: fixed zone, ranked adaptive zone, at most one alert, suggestions |
+| **Inputs** | The data passed to the call | Signals over time: navigation, conversations, feedback and metrics, each summarized by your code |
+| **Stability** | Per call | Policy in code: thresholds, hysteresis, pins and a cap on swaps per visit |
+| **Fallback** | Up to the caller | Built in: cache, then default order, then static screen. Never an empty slot |
+| **Explainability** | Up to the caller | Reasons come from templates and every decision is logged |
+| **Evaluation** | Manual | Offline replay over labeled history, comparing hit rate, latency and cost with the default order |
+
+In short, reflexui adapts **over time and across signals**, with **stability rules** and **offline replay** built in.
 
 ---
 
@@ -412,5 +430,3 @@ Guidelines in short:
 - [json-render + Jev](https://json-render.dev/docs/jev) (Vercel Labs): composes UI specs from candidates with Jev.
 - [jev-ui](https://github.com/etweisberg/jev-ui): `<Branch>`, `<Rank>`, `<Gate>` components backed by Jev.
 - [Introducing System One models and Jev](https://typesafe.ai/blog/introducing-system-one-models-and-jev) (TypeSafe).
-
-reflexui differs by adapting **over time and across signals** (navigation, conversations, feedback, metrics), with stability rules and offline replay built in.
