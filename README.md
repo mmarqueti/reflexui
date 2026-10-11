@@ -64,7 +64,7 @@ Goal: screens that adapt to the moment, never show invented content, and never b
 | **Runtime** | Node.js 20+ |
 | **Package manager** | pnpm 10 |
 | **License** | MIT |
-| **Published packages** | `@reflexui-jev/core`, `@reflexui-jev/providers`, `@reflexui-jev/react`, `@reflexui-jev/replay` |
+| **Published packages** | `@reflexui-jev/core`, `@reflexui-jev/providers`, `@reflexui-jev/react`, `@reflexui-jev/replay`, `@reflexui-jev/redis` |
 
 ---
 
@@ -185,6 +185,7 @@ packages/
   providers/     # Deciders: TypeSafe (Jev) and a deterministic mock
   react/         # Headless useAdaptiveSurface, feedback and DebugPanel
   replay/        # Offline replay over labeled history
+  redis/         # Redis-backed DecisionStore and FeedbackStore
 examples/
   restaurant-kpis/   # Restaurant owner home (fictitious "Mesa Boa")
   saas-dashboard/    # Small B2B SaaS admin surface (domain-isolation check)
@@ -206,6 +207,7 @@ docs/
 | [`@reflexui-jev/providers`](packages/providers) | Deciders: Jev via the TypeSafe API, and a deterministic mock | Ready |
 | [`@reflexui-jev/react`](packages/react) | Headless `useAdaptiveSurface`, feedback helpers and `<DebugPanel>` | Ready |
 | [`@reflexui-jev/replay`](packages/replay) | Offline replay: hit rate vs default order, latency, cost | Ready |
+| [`@reflexui-jev/redis`](packages/redis) | Redis-backed `DecisionStore` and `FeedbackStore` for production | Ready |
 
 ---
 
@@ -271,6 +273,8 @@ const { immediate, fresh, trace } = await decide({
 // `await fresh` resolves with the composed decision, or `immediate` on error/timeout.
 // `await trace` adds the scoreboard and raw model I/O for debug panels.
 ```
+
+`MemoryStore` is for demos and tests: it lives in one process. In production, with several instances or serverless functions, use `redisStore` and `redisFeedbackStore` from [`@reflexui-jev/redis`](packages/redis) so the cache, the pins and the "not useful" feedback are shared.
 
 ### Consume on the client
 

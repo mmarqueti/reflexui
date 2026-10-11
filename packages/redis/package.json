@@ -1,0 +1,53 @@
+{
+  "name": "@reflexui-jev/redis",
+  "version": "0.1.0",
+  "description": "Redis-backed DecisionStore and FeedbackStore for reflexui. Works with ioredis and node-redis.",
+  "license": "MIT",
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "dependencies": {
+    "@reflexui-jev/core": "workspace:*"
+  },
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    }
+  },
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE"
+  ],
+  "sideEffects": false,
+  "keywords": [
+    "reflexui",
+    "adaptive-ui",
+    "redis",
+    "store",
+    "typescript"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/mmarqueti/reflexui.git",
+    "directory": "packages/redis"
+  },
+  "homepage": "https://github.com/mmarqueti/reflexui#readme",
+  "bugs": {
+    "url": "https://github.com/mmarqueti/reflexui/issues"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "scripts": {
+    "build": "tsup",
+    "prepublishOnly": "pnpm build",
+    "test": "vitest run"
+  },
+  "devDependencies": {
+    "ioredis": "^6.0.0",
+    "redis": "^6.3.0",
+    "vitest": "^5.0.3"
+  }
+}
