@@ -45,7 +45,7 @@
   "scripts": {
     "build": "tsup",
     "prepublishOnly": "pnpm build",
-    "test": "vitest run"
+    "test": "vitest run --coverage"
   },
   "devDependencies": {
     "@testing-library/react": "^16.3.3",

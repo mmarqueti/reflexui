@@ -1,9 +1,10 @@
-node_modules/
-dist/
+!.env.example
+.DS_Store
 .env
 .env.*
-!.env.example
 *.log
-.DS_Store
 # replay datasets may contain real customer data: never commit them
+coverage
+dist/
+node_modules/
 replay-data/

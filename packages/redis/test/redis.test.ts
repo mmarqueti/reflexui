@@ -170,3 +170,25 @@ describe.skipIf(!url)("against a real Redis", () => {
   });
 });
 
+
+describe("fromNodeRedis", () => {
+  it("maps ioredis-style calls to node-redis commands", async () => {
+    const calls: unknown[][] = [];
+    const record = (name: string, result: unknown) => async (...args: unknown[]) => { calls.push([name, ...args]); return result; };
+    const client = fromNodeRedis({
+      get: record("get", "v") as never,
+      set: record("set", "OK") as never,
+      hSet: record("hSet", 1) as never,
+      hGetAll: record("hGetAll", { a: "1" }) as never,
+      pExpire: record("pExpire", 1) as never,
+    });
+    expect(await client.get("k")).toBe("v");
+    await client.set("k", "v", "PX", 500);
+    await client.hset("h", "f", "x");
+    expect(await client.hgetall("h")).toEqual({ a: "1" });
+    await client.pexpire("h", 900);
+    expect(calls).toEqual([
+      ["get", "k"], ["set", "k", "v", { PX: 500 }], ["hSet", "h", "f", "x"], ["hGetAll", "h"], ["pExpire", "h", 900],
+    ]);
+  });
+});

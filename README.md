@@ -9,7 +9,7 @@ A System One model ([Jev](https://typesafe.ai/blog/introducing-system-one-models
 your code decides *what is allowed*.
 
 [![CI](https://github.com/mmarqueti/reflexui/actions/workflows/ci.yml/badge.svg)](https://github.com/mmarqueti/reflexui/actions/workflows/ci.yml)
-[![npm](https://img.shields.io/npm/v/@reflexui-jev/core/alpha?label=npm%20%28alpha%29&color=cb3837)](https://www.npmjs.com/package/@reflexui-jev/core)
+[![npm](https://img.shields.io/npm/v/@reflexui-jev/core?label=npm&color=cb3837)](https://www.npmjs.com/package/@reflexui-jev/core)
 [![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 [![TypeScript](https://img.shields.io/badge/TypeScript-strict-3178c6.svg)](https://www.typescriptlang.org/)
 [![Status: pre-alpha](https://img.shields.io/badge/status-pre--alpha-orange.svg)](#roadmap)
@@ -87,26 +87,63 @@ In short, reflexui adapts **over time and across signals**, with **stability rul
 
 ## Quick start
 
-1. **Install** (pre-alpha; published on npm as `0.1.0`):
+Requires Node.js 20+. Install:
 
-   ```bash
-   pnpm add @reflexui-jev/core
-   # optional:
-   pnpm add @reflexui-jev/providers
-   pnpm add @reflexui-jev/react react   # peer: react >= 18
-   ```
+```bash
+pnpm add @reflexui-jev/core @reflexui-jev/providers
+# optional
+pnpm add @reflexui-jev/react react      # React hook and debug panel (react >= 18)
+pnpm add @reflexui-jev/redis ioredis    # shared cache for production
+pnpm add @reflexui-jev/replay           # offline evaluation
+```
 
-2. **Define a surface** with `defineSurface()` (types and definition helpers are ready today).
+A surface, one visit, no API key (save as `quick.mjs` with `"type": "module"` in your `package.json`):
 
-3. **Run decisions** with `decide()` and `typesafeDecider()` (set `TYPESAFE_API_KEY`), or `mockDecider()` for local experiments without an API key. `defaultDecision()` gives the deterministic fallback order.
+```ts
+import { decide, defineSurface, MemoryStore } from "@reflexui-jev/core";
+import { mockDecider } from "@reflexui-jev/providers";
 
-4. **Configure a provider** (optional) by copying the env template:
+const surface = defineSurface<{ plan: "free" | "pro" }>({
+  id: "home",
+  fixed: () => ["revenue"], // chosen by your code, never by the model
+  defaultOrder: () => ["usage", "billing", "security"],
+  items: [
+    { id: "usage", kind: "card", area: "usage", title: "Usage" },
+    { id: "billing", kind: "card", area: "billing", title: "Billing", eligible: (ctx) => ctx.plan !== "free" },
+    { id: "security", kind: "card", area: "security", title: "Security" },
+  ],
+  signals: [],
+  relevanceLevels: ["Nothing to see here.", "Worth a look.", "Needs attention today."],
+  relevancePrompt: 'How important is the "{title}" card for this user today?',
+});
 
-   ```bash
-   cp .env.example .env
-   ```
+const { immediate, fresh } = await decide({
+  surface,
+  ctx: { plan: "pro" },
+  subjectId: "user-1",
+  decider: mockDecider(), // swap for typesafeDecider() to use Jev
+  store: new MemoryStore(),
+});
 
-Without any key, examples are intended to run with the mock decider.
+console.log("immediate:", immediate.source, immediate.adaptive.map((p) => p.id)); // default order
+console.log("fresh:    ", (await fresh).source, (await fresh).adaptive.map((p) => p.id)); // ranked
+```
+
+`mockDecider` answers with a deterministic hash, so the ranking is arbitrary. To get real judgments, create a TypeSafe key
+and use Jev:
+
+```bash
+cp .env.example .env   # then set TYPESAFE_API_KEY
+```
+
+```ts
+import { typesafeDecider } from "@reflexui-jev/providers";
+// decider: typesafeDecider(),
+```
+
+Next steps: describe what changed with **signals** (see [Usage](#usage)), render the result with the
+[React hook](#consume-on-the-client), keep state in Redis ([docs/redis.md](docs/redis.md)) and measure the ranking with
+[replay](docs/replay.md).
 
 For local work on this repository:
 
@@ -114,6 +151,7 @@ For local work on this repository:
 pnpm install
 pnpm typecheck
 pnpm build
+pnpm test
 ```
 
 ---
@@ -357,7 +395,7 @@ Another backend? A decider is just `{ name, evaluate(request) }` (the `Decider` 
 | [`examples/restaurant-kpis`](examples/restaurant-kpis) | Restaurant owner home | 19 cards, 5 alerts, 6 suggestions; 3 fictitious restaurants (delivery-first, dine-in bistro, 3-unit chain) |
 | [`examples/saas-dashboard`](examples/saas-dashboard) | B2B SaaS admin home | Same core, different domain — proof that nothing is restaurant-specific |
 
-Both examples define surfaces and fixtures today. An interactive Next.js demo is planned for **M1**, defaulting to `mockDecider`.
+These two define surfaces and fixtures. For something you can run, start with the [Quick start](#quick-start).
 
 ---
 

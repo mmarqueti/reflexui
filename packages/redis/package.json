@@ -43,7 +43,7 @@
   "scripts": {
     "build": "tsup",
     "prepublishOnly": "pnpm build",
-    "test": "vitest run"
+    "test": "vitest run --coverage"
   },
   "devDependencies": {
     "ioredis": "^6.0.0",

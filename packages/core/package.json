@@ -39,6 +39,6 @@
   "scripts": {
     "build": "tsup",
     "prepublishOnly": "pnpm build",
-    "test": "vitest run"
+    "test": "vitest run --coverage"
   }
 }
