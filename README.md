@@ -22,10 +22,9 @@ your code decides *what is allowed*.
 
 </div>
 
-> **Status: pre-alpha.** The core (`compose`, `decide`, `buildRequests`), the React hook and the TypeSafe/Jev decider work,
-> are covered by tests and validated against the real Jev API. The other remote deciders are still stubs
-> (`not implemented yet (milestone Mx)`). The API may change
-> between releases. See the [Roadmap](#roadmap).
+> **Status: pre-alpha.** The core (`compose`, `decide`, `buildRequests`), the TypeSafe/Jev decider, the React hook with
+> `<DebugPanel>`, and offline replay all work, are covered by tests, and were validated against the real Jev API in a
+> browser. The API may change between releases. See the [Roadmap](#roadmap).
 
 ---
 
@@ -184,7 +183,7 @@ Full reference: [docs/concepts.md](docs/concepts.md).
 packages/
   core/          # Types, questions, defineSurface, policy, compose, decide, stores
   providers/     # Deciders: TypeSafe (Jev) and a deterministic mock
-  react/         # Headless useAdaptiveSurface + feedback
+  react/         # Headless useAdaptiveSurface, feedback and DebugPanel
   replay/        # Offline replay over labeled history
 examples/
   restaurant-kpis/   # Restaurant owner home (fictitious "Mesa Boa")
@@ -205,7 +204,7 @@ docs/
 | --- | --- | --- |
 | [`@reflexui-jev/core`](packages/core) | Types, question builders, `defineSurface`, policy, `compose`, `decide`, stores | Ready (M1 core) |
 | [`@reflexui-jev/providers`](packages/providers) | Deciders: Jev via the TypeSafe API, and a deterministic mock | Ready |
-| [`@reflexui-jev/react`](packages/react) | Headless `useAdaptiveSurface` and feedback helpers | Ready (debug panel planned) |
+| [`@reflexui-jev/react`](packages/react) | Headless `useAdaptiveSurface`, feedback helpers and `<DebugPanel>` | Ready |
 | [`@reflexui-jev/replay`](packages/replay) | Offline replay: hit rate vs default order, latency, cost | Ready |
 
 ---
@@ -285,7 +284,7 @@ const { decision, status, deferred, feedback } = useAdaptiveSurface({
 });
 ```
 
-Return `decisionStream(await decide(...))` from the endpoint. The hook renders the immediate decision at once and swaps in the fresh one only if it arrives within `applyWithinMs`; otherwise it is exposed as `deferred` and used on the next visit.
+Return `decisionStream(await decide(...))` from the endpoint (add `{ trace: true }` in development to feed `<DebugPanel>`). The hook renders the immediate decision at once and swaps in the fresh one only if it arrives within `applyWithinMs`; otherwise it is exposed as `deferred` and used on the next visit.
 
 ### Fallback without the model (available today)
 
@@ -394,7 +393,7 @@ CI (`.github/workflows/ci.yml`) runs `pnpm install --frozen-lockfile`, `pnpm typ
 | Milestone | Scope | Exit criterion |
 | --- | --- | --- |
 | **M0** Access | Remote decider for Jev (TypeSafe API) | Real answers from Jev in an integration test. **Done** |
-| **M1** Core + mock demo | `compose`, `decide`, `buildRequests`, React hook, restaurant demo | Demo runs with `mockDecider`, no API key. **Core and React hook done**; debug panel pending |
+| **M1** Core + mock demo | `compose`, `decide`, `buildRequests`, React hook, restaurant demo | Demo runs with `mockDecider`, no API key. **Done** |
 | **M2** Replay | `runReplay`, labeling format, report | Report shows hit rate vs default order. **Done**; see [docs/replay.md](docs/replay.md) |
 | **M3** First production case | Integration behind a flag, feedback, logs | p95 ≤ 500 ms, no instability complaints |
 | **M4** Field test | A/B against the static screen | Decision: ship, adjust, or stop |

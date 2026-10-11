@@ -4,7 +4,7 @@ export { defineSurface, defaultPolicy } from "./surface";
 export { buildReasons } from "./reasons";
 export { MemoryStore, MemoryLog, MemoryFeedbackStore, demotedItems } from "./store";
 export { decisionStream, readDecisionStream } from "./stream";
-export type { DecisionStreamMessage } from "./stream";
+export type { DecisionStreamMessage, DecisionStreamOptions } from "./stream";
 export { decide, buildRequests } from "./decide";
 export type { BuiltRequests, DecideOptions, DecideResult, DecideTrace } from "./decide";
 export { compose, composeWithTrace, defaultDecision, eligibleItems, relevanceKey, alertKey, FOCUS_KEY } from "./compose";

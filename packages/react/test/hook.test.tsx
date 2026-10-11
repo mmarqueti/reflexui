@@ -83,3 +83,47 @@ describe("useAdaptiveSurface", () => {
     await waitFor(() => expect(fetch.mock.calls.filter(([u]) => !String(u).endsWith("/feedback"))).toHaveLength(2));
   });
 });
+
+describe("useAdaptiveSurface: trace, immediate and refresh", () => {
+  const traceFetch = (calls: unknown[] = []) =>
+    vi.fn(async (_url: string, init?: RequestInit) => {
+      calls.push(JSON.parse(String(init?.body)));
+      const lines = [
+        { type: "immediate", decision: decision("default", ["a", "b"]) },
+        { type: "fresh", decision: decision("fresh", ["b", "a"]) },
+        { type: "trace", trace: { decision: decision("fresh", ["b", "a"]), requests: {}, results: {}, facts: [], latencyMs: 5 } },
+      ];
+      return new Response(lines.map((l) => JSON.stringify(l) + "\n").join(""), { status: 200 });
+    });
+
+  it("exposes immediate, fresh, trace and the time the fresh decision took", async () => {
+    const { result } = renderHook(() => useAdaptiveSurface({ ...base, fetch: traceFetch() as never, applyWithinMs: 5000 }));
+    await waitFor(() => expect(result.current.trace).toBeDefined());
+    expect(result.current.immediate?.source).toBe("default");
+    expect(result.current.fresh?.source).toBe("fresh");
+    expect(result.current.freshAfterMs).toBeGreaterThanOrEqual(0);
+    expect(result.current.trace?.latencyMs).toBe(5);
+  });
+
+  it("merges `body` into the request and refetches when it changes", async () => {
+    const calls: unknown[] = [];
+    const fetch = traceFetch(calls);
+    const { result, rerender } = renderHook(
+      ({ decider }) => useAdaptiveSurface({ ...base, body: { decider }, fetch: fetch as never }),
+      { initialProps: { decider: "jev" } },
+    );
+    await waitFor(() => expect(result.current.trace).toBeDefined());
+    expect(calls[0]).toEqual({ decider: "jev", surfaceId: "s", subjectId: "u" });
+    rerender({ decider: "mock" });
+    await waitFor(() => expect(calls).toHaveLength(2));
+    expect(calls[1]).toMatchObject({ decider: "mock" });
+  });
+
+  it("refresh() runs another visit", async () => {
+    const calls: unknown[] = [];
+    const { result } = renderHook(() => useAdaptiveSurface({ ...base, fetch: traceFetch(calls) as never }));
+    await waitFor(() => expect(result.current.trace).toBeDefined());
+    act(() => result.current.refresh());
+    await waitFor(() => expect(calls).toHaveLength(2));
+  });
+});

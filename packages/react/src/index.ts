@@ -1,5 +1,8 @@
 import { useCallback, useEffect, useRef, useState } from "react";
-import { readDecisionStream, type Decision } from "@reflexui-jev/core";
+import { readDecisionStream, type DecideTrace, type Decision } from "@reflexui-jev/core";
+
+export { DebugPanel } from "./DebugPanel";
+export type { DebugPanelProps } from "./DebugPanel";
 
 export interface UseAdaptiveSurfaceOptions {
   surfaceId: string;
@@ -15,6 +18,8 @@ export interface UseAdaptiveSurfaceOptions {
   applyWithinMs?: number;
   /** Called when a fresh decision arrives too late to apply in this visit (the server cached it for the next one). */
   onDeferred?: (decision: Decision) => void;
+  /** Extra JSON fields merged into the POST body (e.g. an environment flag). Changing it refetches. */
+  body?: Record<string, unknown>;
   /** Set to false to skip fetching (e.g. while the subject is unknown). */
   enabled?: boolean;
   fetch?: typeof fetch;
@@ -22,6 +27,14 @@ export interface UseAdaptiveSurfaceOptions {
 
 export interface UseAdaptiveSurfaceResult {
   decision: Decision | undefined;
+  /** The first decision received (cache, or default order): what rendered before the model answered. */
+  immediate: Decision | undefined;
+  /** The fresh decision as received, even when it was too late to apply (see `deferred`). */
+  fresh: Decision | undefined;
+  /** Model I/O and scoreboard, when the server streams it (`decisionStream(result, { trace: true })`). */
+  trace: DecideTrace | undefined;
+  /** Milliseconds from the request until the fresh decision arrived. */
+  freshAfterMs: number | undefined;
   /** loading: nothing yet · ready: immediate shown · updated: fresh applied · error: request failed */
   status: "loading" | "ready" | "updated" | "error";
   /** Fresh decision that arrived too late for this visit, if any. */
@@ -31,6 +44,8 @@ export interface UseAdaptiveSurfaceResult {
   feedback: (itemId: string, useful: boolean) => Promise<void>;
   /** Apply the deferred decision now (e.g. behind a "Refresh" button). */
   applyDeferred: () => void;
+  /** Run another visit now (same subject), e.g. a "Next visit" button. */
+  refresh: () => void;
 }
 
 /**
@@ -43,6 +58,12 @@ export function useAdaptiveSurface(options: UseAdaptiveSurfaceOptions): UseAdapt
   const [deferred, setDeferred] = useState<Decision>();
   const [status, setStatus] = useState<UseAdaptiveSurfaceResult["status"]>("loading");
   const [error, setError] = useState<string>();
+  const [immediate, setImmediate] = useState<Decision>();
+  const [fresh, setFresh] = useState<Decision>();
+  const [trace, setTrace] = useState<DecideTrace>();
+  const [freshAfterMs, setFreshAfterMs] = useState<number>();
+  const [visit, setVisit] = useState(0);
+  const bodyKey = JSON.stringify(options.body ?? {});
   // Keep the latest options in a ref so the effect only re-runs when the subject changes.
   const opts = useRef(options);
   opts.current = options;
@@ -52,6 +73,10 @@ export function useAdaptiveSurface(options: UseAdaptiveSurfaceOptions): UseAdapt
     const controller = new AbortController();
     const started = Date.now();
     setDecision(undefined);
+    setImmediate(undefined);
+    setFresh(undefined);
+    setTrace(undefined);
+    setFreshAfterMs(undefined);
     setDeferred(undefined);
     setError(undefined);
     setStatus("loading");
@@ -61,7 +86,7 @@ export function useAdaptiveSurface(options: UseAdaptiveSurfaceOptions): UseAdapt
         const res = await doFetch(endpoint, {
           method: "POST",
           headers: { "content-type": "application/json" },
-          body: JSON.stringify({ surfaceId, subjectId }),
+          body: JSON.stringify({ ...opts.current.body, surfaceId, subjectId }),
           signal: controller.signal,
         });
         if (!res.ok || !res.body) throw new Error(`${endpoint} responded ${res.status}`);
@@ -69,14 +94,22 @@ export function useAdaptiveSurface(options: UseAdaptiveSurfaceOptions): UseAdapt
         for await (const msg of readDecisionStream(res.body)) {
           if (controller.signal.aborted) return;
           if (msg.type === "immediate") {
+            setImmediate(msg.decision);
             setDecision(msg.decision);
             setStatus("ready");
-          } else if (Date.now() - started <= windowMs) {
-            setDecision(msg.decision);
-            setStatus("updated");
-          } else {
-            setDeferred(msg.decision);
-            opts.current.onDeferred?.(msg.decision);
+          } else if (msg.type === "fresh") {
+            const elapsed = Date.now() - started;
+            setFresh(msg.decision);
+            setFreshAfterMs(elapsed);
+            if (elapsed <= windowMs) {
+              setDecision(msg.decision);
+              setStatus("updated");
+            } else {
+              setDeferred(msg.decision);
+              opts.current.onDeferred?.(msg.decision);
+            }
+          } else if (msg.type === "trace") {
+            setTrace(msg.trace);
           }
         }
       } catch (e) {
@@ -86,7 +119,7 @@ export function useAdaptiveSurface(options: UseAdaptiveSurfaceOptions): UseAdapt
       }
     })();
     return () => controller.abort();
-  }, [surfaceId, subjectId, endpoint, enabled]);
+  }, [surfaceId, subjectId, endpoint, enabled, bodyKey, visit]);
 
   const feedback = useCallback(
     async (itemId: string, useful: boolean) => {
@@ -110,5 +143,7 @@ export function useAdaptiveSurface(options: UseAdaptiveSurfaceOptions): UseAdapt
     });
   }, []);
 
-  return { decision, status, deferred, error, feedback, applyDeferred };
+  const refresh = useCallback(() => setVisit((v) => v + 1), []);
+
+  return { decision, immediate, fresh, trace, freshAfterMs, status, deferred, error, feedback, applyDeferred, refresh };
 }

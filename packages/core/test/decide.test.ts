@@ -173,6 +173,17 @@ describe("decision stream", () => {
     const messages = [];
     for await (const m of readDecisionStream(decisionStream(res))) messages.push(m);
     expect(messages.map((m) => m.type)).toEqual(["immediate", "fresh"]);
-    expect(messages[1]!.decision.source).toBe("fresh");
+    expect(messages[1]!.type === "fresh" && messages[1]!.decision.source).toBe("fresh");
+  });
+
+  it("sends the trace only when asked", async () => {
+    const run = async (trace: boolean) => {
+      const res = await decide({ surface, ctx, subjectId: "u1", decider: scripted(relevance({ c: [2.5] })), store: new MemoryStore() });
+      const types = [];
+      for await (const m of readDecisionStream(decisionStream(res, { trace }))) types.push(m.type);
+      return types;
+    };
+    expect(await run(false)).toEqual(["immediate", "fresh"]);
+    expect(await run(true)).toEqual(["immediate", "fresh", "trace"]);
   });
 });

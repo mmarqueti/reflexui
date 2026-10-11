@@ -11,7 +11,7 @@ Headless, domain-free core.
 | `MemoryStore`, `MemoryLog` | ready |
 | `defaultDecision()` | ready |
 | `buildRequests()`, `compose()`, `composeWithTrace()`, `decide()` | ready |
-| `decisionStream()`, `readDecisionStream()` (NDJSON: immediate first, fresh later) | ready |
+| `decisionStream()`, `readDecisionStream()` (NDJSON: immediate first, fresh later, optional `trace`) | ready |
 | `MemoryFeedbackStore`, `demotedItems()`: "not useful" demotes an item for `policy.demoteForMs` (7 days) | ready |
 | `Decision.more` ("See all") and `Decision.demoted` | ready |
 
