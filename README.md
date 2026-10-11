@@ -23,7 +23,7 @@ your code decides *what is allowed*.
 </div>
 
 > **Status: pre-alpha.** The core (`compose`, `decide`, `buildRequests`), the React hook and the TypeSafe/Jev decider work,
-> are covered by tests and validated against the real Jev API. Replay and the other remote deciders are still stubs
+> are covered by tests and validated against the real Jev API. The other remote deciders are still stubs
 > (`not implemented yet (milestone Mx)`). The API may change
 > between releases. See the [Roadmap](#roadmap).
 
@@ -194,6 +194,7 @@ docs/
   architecture.md
   writing-questions.md
   privacy.md
+  replay.md
 ```
 
 ---
@@ -205,7 +206,7 @@ docs/
 | [`@reflexui-jev/core`](packages/core) | Types, question builders, `defineSurface`, policy, `compose`, `decide`, stores | Ready (M1 core) |
 | [`@reflexui-jev/providers`](packages/providers) | Deciders for TypeSafe, Cloudflare, OpenRouter, an LLM fallback, and a deterministic mock | TypeSafe + mock ready · other remote deciders M0–M1 |
 | [`@reflexui-jev/react`](packages/react) | Headless `useAdaptiveSurface` and feedback helpers | Ready (debug panel planned) |
-| [`@reflexui-jev/replay`](packages/replay) | Offline replay: hit rate vs default order, latency, cost | M2 |
+| [`@reflexui-jev/replay`](packages/replay) | Offline replay: hit rate vs default order, latency, cost | Ready |
 
 ---
 
@@ -387,7 +388,7 @@ CI (`.github/workflows/ci.yml`) runs `pnpm install --frozen-lockfile`, `pnpm typ
 | --- | --- | --- |
 | **M0** Access | Remote deciders for TypeSafe and Cloudflare | Real answers from Jev in an integration test. **TypeSafe done**; Cloudflare pending |
 | **M1** Core + mock demo | `compose`, `decide`, `buildRequests`, React hook, restaurant demo | Demo runs with `mockDecider`, no API key. **Core and React hook done**; debug panel pending |
-| **M2** Replay | `runReplay`, labeling format, report | Report shows hit rate vs default order |
+| **M2** Replay | `runReplay`, labeling format, report | Report shows hit rate vs default order. **Done**; see [docs/replay.md](docs/replay.md) |
 | **M3** First production case | Integration behind a flag, feedback, logs | p95 ≤ 500 ms, no instability complaints |
 | **M4** Field test | A/B against the static screen | Decision: ship, adjust, or stop |
 
