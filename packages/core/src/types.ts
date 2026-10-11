@@ -170,6 +170,8 @@ export interface Policy {
   timeoutMs: number;
   /** Minimum interval between fresh decisions for the same subject. */
   minRefreshMs: number;
+  /** How long a "not useful" feedback keeps an item out of the adaptive zone. */
+  demoteForMs: number;
 }
 
 // ---------------------------------------------------------------------------
@@ -221,6 +223,10 @@ export interface Decision {
   alert?: PlacedItem;
   suggestions: PlacedItem[];
   focus?: string;
+  /** Eligible cards not shown in the adaptive zone: the "See all" list. */
+  more?: string[];
+  /** Items kept out of the zone because of recent "not useful" feedback. */
+  demoted?: string[];
   source: DecisionSource;
   createdAt: number;
 }
@@ -228,6 +234,20 @@ export interface Decision {
 export interface DecisionStore {
   get(key: string): Promise<Decision | undefined>;
   set(key: string, decision: Decision): Promise<void>;
+}
+
+/** "Useful?" feedback on an item. A not-useful entry doubles as a replay label. */
+export interface FeedbackEntry {
+  surfaceId: string;
+  subjectId: string;
+  itemId: string;
+  useful: boolean;
+  at: number;
+}
+
+export interface FeedbackStore {
+  record(entry: FeedbackEntry): Promise<void>;
+  list(surfaceId: string, subjectId: string): Promise<FeedbackEntry[]>;
 }
 
 export interface DecisionLogEntry {

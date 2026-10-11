@@ -22,8 +22,9 @@ your code decides *what is allowed*.
 
 </div>
 
-> **Status: pre-alpha.** This repository contains the structure, the types and the design.
-> Most functions are stubs that throw `not implemented yet (milestone Mx)`. The API may change
+> **Status: pre-alpha.** The core (`compose`, `decide`, `buildRequests`), the React hook and the TypeSafe/Jev decider work,
+> are covered by tests and validated against the real Jev API. Replay and the other remote deciders are still stubs
+> (`not implemented yet (milestone Mx)`). The API may change
 > between releases. See the [Roadmap](#roadmap).
 
 ---
@@ -98,7 +99,7 @@ In short, reflexui adapts **over time and across signals**, with **stability rul
 
 2. **Define a surface** with `defineSurface()` (types and definition helpers are ready today).
 
-3. **Run decisions** with `decide()` once milestone **M1** lands (currently a stub). Until then, use `defaultDecision()` for a deterministic fallback order, or `mockDecider()` for local experiments without an API key.
+3. **Run decisions** with `decide()` and `typesafeDecider()` (set `TYPESAFE_API_KEY`), or `mockDecider()` for local experiments without an API key. `defaultDecision()` gives the deterministic fallback order.
 
 4. **Configure a provider** (optional) by copying the env template:
 
@@ -201,9 +202,9 @@ docs/
 
 | Package | Purpose | Status |
 | --- | --- | --- |
-| [`@reflexui-jev/core`](packages/core) | Types, question builders, `defineSurface`, policy, `compose`, `decide`, stores | Types ready · logic M1 |
-| [`@reflexui-jev/providers`](packages/providers) | Deciders for TypeSafe, Cloudflare, OpenRouter, an LLM fallback, and a deterministic mock | Mock ready · remote M0–M1 |
-| [`@reflexui-jev/react`](packages/react) | Headless `useAdaptiveSurface` and feedback helpers | M1 |
+| [`@reflexui-jev/core`](packages/core) | Types, question builders, `defineSurface`, policy, `compose`, `decide`, stores | Ready (M1 core) |
+| [`@reflexui-jev/providers`](packages/providers) | Deciders for TypeSafe, Cloudflare, OpenRouter, an LLM fallback, and a deterministic mock | TypeSafe + mock ready · other remote deciders M0–M1 |
+| [`@reflexui-jev/react`](packages/react) | Headless `useAdaptiveSurface` and feedback helpers | Ready (debug panel planned) |
 | [`@reflexui-jev/replay`](packages/replay) | Offline replay: hit rate vs default order, latency, cost | M2 |
 
 ---
@@ -253,36 +254,37 @@ export const home = defineSurface<RestaurantCtx>({
 });
 ```
 
-### Decide on the server (planned — milestone M1)
+### Decide on the server
 
 ```ts
 import { decide, MemoryStore } from "@reflexui-jev/core";
-import { cloudflareDecider } from "@reflexui-jev/providers";
+import { typesafeDecider } from "@reflexui-jev/providers";
 
-const { immediate, fresh } = decide({
+const { immediate, fresh, trace } = await decide({
   surface: home,
   ctx,
   subjectId: ctx.restaurantId,
-  decider: cloudflareDecider(),
+  decider: typesafeDecider(), // reads TYPESAFE_API_KEY
   store: new MemoryStore(),
 });
+// `immediate` never waits on the model (cache, else default order).
+// `await fresh` resolves with the composed decision, or `immediate` on error/timeout.
+// `await trace` adds the scoreboard and raw model I/O for debug panels.
 ```
 
-`decide()` currently throws `not implemented yet (milestone M1)`. Until then, `defaultDecision()` returns a deterministic decision from the surface's `defaultOrder`.
-
-### Consume on the client (planned — milestone M1)
+### Consume on the client
 
 ```tsx
 import { useAdaptiveSurface } from "@reflexui-jev/react";
 
-const { decision, status, feedback } = useAdaptiveSurface({
+const { decision, status, deferred, feedback } = useAdaptiveSurface({
   surfaceId: "restaurant-home",
   subjectId,
   endpoint: "/api/surface",
 });
 ```
 
-The hook is a stub today: it returns `status: "loading"` and an empty `feedback` function until M1.
+Return `decisionStream(await decide(...))` from the endpoint. The hook renders the immediate decision at once and swaps in the fresh one only if it arrives within `applyWithinMs`; otherwise it is exposed as `deferred` and used on the next visit.
 
 ### Fallback without the model (available today)
 
@@ -319,7 +321,7 @@ Never commit `.env`. Replay datasets under `replay-data/` are git-ignored on pur
 | Provider | Model / backend | Status |
 | --- | --- | --- |
 | `mockDecider` | Deterministic hash | Ready — runs examples and tests with no API key |
-| `typesafeDecider` | Jev (TypeSafe direct) | M0 (stub) |
+| `typesafeDecider` | Jev (TypeSafe direct) | Ready: `POST /v1/systemone`, retries, timeout |
 | `cloudflareDecider` | `typesafe/jev` on Workers AI | M0 (stub) |
 | `openrouterDecider` | `typesafe/jev-1.13` | M1 (stub) |
 | `llmDecider` | Any LLM with structured output | M1 (stub); slower, uncalibrated |
@@ -383,8 +385,8 @@ CI (`.github/workflows/ci.yml`) runs `pnpm install --frozen-lockfile`, `pnpm typ
 
 | Milestone | Scope | Exit criterion |
 | --- | --- | --- |
-| **M0** Access | Remote deciders for TypeSafe and Cloudflare | Real answers from Jev in an integration test |
-| **M1** Core + mock demo | `compose`, `decide`, `buildRequests`, React hook, restaurant demo | Demo runs with `mockDecider`, no API key |
+| **M0** Access | Remote deciders for TypeSafe and Cloudflare | Real answers from Jev in an integration test. **TypeSafe done**; Cloudflare pending |
+| **M1** Core + mock demo | `compose`, `decide`, `buildRequests`, React hook, restaurant demo | Demo runs with `mockDecider`, no API key. **Core and React hook done**; debug panel pending |
 | **M2** Replay | `runReplay`, labeling format, report | Report shows hit rate vs default order |
 | **M3** First production case | Integration behind a flag, feedback, logs | p95 ≤ 500 ms, no instability complaints |
 | **M4** Field test | A/B against the static screen | Decision: ship, adjust, or stop |

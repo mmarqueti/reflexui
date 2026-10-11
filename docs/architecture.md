@@ -34,6 +34,6 @@ leave an empty slot.
 1. Fixed zone never changes unless the profile does.
 2. At most `maxSwapsPerVisit` changes; the largest score gaps go first.
 3. An item displaces another only if its score is higher by `hysteresis`.
-4. Promoted items stay `pinForMs`, unless a stronger alert appears.
-5. Demoted items remain reachable under "See all".
-6. A thumbs-down demotes an item for 7 days and is logged as a replay label.
+4. Promoted items stay `pinForMs`, unless a shown alert in the same area appears.
+5. Demoted items remain reachable under "See all" (`Decision.more`).
+6. A thumbs-down demotes an item for `demoteForMs` (7 days) via a `FeedbackStore`; the entries double as replay labels (`Decision.demoted`).

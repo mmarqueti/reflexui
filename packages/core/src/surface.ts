@@ -13,6 +13,7 @@ export const defaultPolicy: Policy = {
   applyWithinMs: 300,
   timeoutMs: 1000,
   minRefreshMs: 10 * 60 * 1000,
+  demoteForMs: 7 * 24 * 60 * 60 * 1000,
 };
 
 export function defineSurface<Ctx>(definition: SurfaceDefinition<Ctx>): Surface<Ctx> {
