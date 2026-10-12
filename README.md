@@ -23,8 +23,10 @@ your code decides *what is allowed*.
 </div>
 
 > **Status: pre-alpha.** The core (`compose`, `decide`, `buildRequests`), the TypeSafe/Jev decider, the React hook with
-> `<DebugPanel>`, and offline replay all work, are covered by tests, and were validated against the real Jev API in a
-> browser. The API may change between releases. See the [Roadmap](#roadmap).
+> `<DebugPanel>`, the Redis stores and offline replay all work and are covered by automated tests that CI runs. Against the
+> real Jev API they were exercised by hand, through the [example app](https://github.com/mmarqueti/reflexui-example) and the
+> replay script; there is no automated test against the live API. The API may change between releases. See the
+> [Roadmap](#roadmap).
 
 ---
 
@@ -424,14 +426,40 @@ Requirements: **Node.js ≥ 20**, **pnpm 10** (see `packageManager` in the root 
 
 ```bash
 pnpm install      # install workspace deps
-pnpm typecheck    # tsc --noEmit across the workspace
+pnpm typecheck    # tsc --noEmit over the source and the test files
 pnpm build        # build all packages (tsup)
+pnpm test         # vitest in every package, with coverage minimums
 pnpm changeset    # add a Changesets entry before release
 ```
 
-`pnpm test` is wired at the root (`pnpm -r test`) for when packages add test scripts; none ship tests yet.
+Run `pnpm build` before `pnpm test`: the packages import each other through their built `dist/`.
 
-CI (`.github/workflows/ci.yml`) runs `pnpm install --frozen-lockfile`, `pnpm typecheck`, and `pnpm build` on `main` and pull requests.
+### Tests
+
+88 tests run anywhere and 5 more run when a Redis is available (93 in total).
+
+| Package | What is tested |
+| --- | --- |
+| `core` | `compose` (ranking, thresholds, hysteresis, swap limit, pins, one alert, feedback), `decide` (cache, timeout, fallbacks, store failures), the stream, question builders, `buildReasons`, `defineSurface`, stores |
+| `providers` | `typesafeDecider` against a mocked `fetch` (wire format, retries, errors) and `mockDecider` |
+| `react` | `useAdaptiveSurface` (apply window, deferred, feedback, refresh) and `<DebugPanel>`, in jsdom |
+| `replay` | `runReplay`, `cachingDecider`, case parsing, report formatting |
+| `redis` | Both stores with a fake client; with a real Redis, also through `decide()` using ioredis and node-redis |
+
+- **Coverage minimums** are enforced by `pnpm test`: 90% of lines, statements and functions (85% for `redis`) and 80% of
+  branches (75% for `react`). See each package's `vitest.config.ts`.
+- **A public API test** in each package pins its exports. If it fails you changed what users can import: update the list on
+  purpose and say so in the changeset.
+- **Redis integration tests** run when `REDIS_URL` is set, for example
+  `docker run -d -p 6379:6379 redis:7` and then `REDIS_URL=redis://localhost:6379 pnpm test`. Without it they are skipped.
+
+What is **not** automated: calls to the real Jev API (they need a key). That path was checked by hand, through the example
+app and the replay script. The React tests use jsdom, not a real browser.
+
+### CI
+
+`.github/workflows/ci.yml` runs on `main` and on pull requests with a Redis 7 service: `pnpm install --frozen-lockfile`,
+`pnpm typecheck`, `pnpm build` and `pnpm test` (including the Redis integration tests and the coverage minimums).
 
 ---
 

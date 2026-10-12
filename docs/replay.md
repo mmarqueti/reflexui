@@ -121,8 +121,8 @@ Do not pick the best value on the same cases you used to tune it: keep some case
 
 ## Example: the 5 mocked people
 
-`reflexui-example-full` ships a script with one hand-labeled case per person (`data/labels.json`). Against the
-real Jev API (`jev-1.13.0`), one run gave:
+The [reflexui-example](https://github.com/mmarqueti/reflexui-example) repository ships a script (`pnpm replay`) with one
+hand-labeled case per person (`data/labels.json`). Against the real Jev API (`jev-1.13.0`), one run gave:
 
 ```
 cases: 5
@@ -132,8 +132,8 @@ latency p50 360 ms · p95 469 ms · input tokens 14068
 
 Read it with care. Five cases written by the same person who wrote the signals is a demonstration, not a
 validation: the 80% says the pipeline works and that the signals carry information, not that 0.6 is the right
-`minConfidence`. Results also move a little between runs (one alert sat exactly on the 0.75 threshold and
-flipped), which is the kind of thing a larger set is for.
+`minConfidence`. Results also move between runs: the same five cases gave 80% in one run and 100% in another, because
+some alerts sit right on the 0.75 threshold. That is the kind of thing a larger set is for.
 
 ## Limits
 
