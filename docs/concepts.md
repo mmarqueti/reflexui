@@ -12,7 +12,7 @@ A screen that adapts to a **subject** (an account, a store, a user). Defined onc
 | `items` | Every card, alert and suggestion the surface may show. |
 | `signals` | Providers that summarize data for the model. |
 | `relevanceLevels` | Shared rubric for cards and suggestions (2–10 levels). |
-| `relevancePrompt` | Generic prompt; `{title}` is replaced per item. |
+| `relevancePrompt` | Generic prompt; `{title}` and `{area}` are replaced per item. |
 | `focus` | Optional choice question for tie-breaks and reasons. |
 | `policy` | Overrides for `defaultPolicy`. |
 
@@ -21,7 +21,7 @@ A screen that adapts to a **subject** (an account, a store, a user). Defined onc
 | Kind | Question sent | Shown where |
 | --- | --- | --- |
 | `card` | `score` on the relevance rubric | Adaptive zone, ranked |
-| `alert` | `noul` with the item's own question | Alert slot, at most one |
+| `alert` | `noul` (Jev's yes/no question, answered as a probability) with the item's own question | Alert slot, at most one |
 | `suggestion` | `score` on the relevance rubric | Suggestion row (e.g. questions for an assistant) |
 
 `eligible(ctx)` runs first. Ineligible items are never sent to the model.

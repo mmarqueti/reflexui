@@ -26,8 +26,8 @@ and lets replay re-run history deterministically.
 
 ## Fallback chain
 
-cached decision → `defaultOrder` → static screen. Errors, timeouts and low confidence never
-leave an empty slot.
+cached decision → `defaultOrder`. Errors, timeouts and low confidence fall back to one of them and
+never block rendering. A static screen for when even that is unavailable is up to your app.
 
 ## Stability rules (in `compose`)
 

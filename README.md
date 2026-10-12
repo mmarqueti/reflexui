@@ -18,7 +18,7 @@ your code decides *what is allowed*.
 
 <sub>`adaptive-ui` · `personalization` · `generative-ui` · `dashboards` · `llm` · `system-one` · `jev` · `react` · `typescript` · `headless`</sub>
 
-[Quick start](#quick-start) · [Why](#why) · [How it works](#how-it-works) · [Quick look](#a-quick-look) · [Packages](#packages) · [Roadmap](#roadmap) · [Contributing](#contributing)
+[Quick start](#quick-start) · [Why](#why) · [How it works](#how-it-works) · [Usage](#usage) · [Packages](#packages) · [Roadmap](#roadmap) · [Contributing](#contributing)
 
 </div>
 
@@ -79,7 +79,7 @@ Projects such as [json-render + Jev](https://json-render.dev/docs/jev) and [jev-
 | **Unit of decision** | One component or spec, at render time | A whole surface: fixed zone, ranked adaptive zone, at most one alert, suggestions |
 | **Inputs** | The data passed to the call | Signals over time: navigation, conversations, feedback and metrics, each summarized by your code |
 | **Stability** | Per call | Policy in code: thresholds, hysteresis, pins and a cap on swaps per visit |
-| **Fallback** | Up to the caller | Built in: cache, then default order, then static screen. Never an empty slot |
+| **Fallback** | Up to the caller | Built in: the cached decision, then `defaultOrder`. The model never blocks rendering. What to show if even that is unavailable is up to your app |
 | **Explainability** | Up to the caller | Reasons come from templates and every decision is logged |
 | **Evaluation** | Manual | Offline replay over labeled history, comparing hit rate, latency and cost with the default order |
 
@@ -207,7 +207,7 @@ The two model calls run in parallel. Each receives only the signals its question
 | **Surface** | A screen definition: fixed zone, default order, items, signals, rubric, policy | `defineSurface()` |
 | **Item** | A `card`, an `alert`, or a `suggestion`, with an eligibility rule and reason templates | `SurfaceItem` |
 | **Signal** | A provider that turns raw data into a short, model-ready snapshot + structured facts | `SignalProvider` |
-| **Question** | A typed question: `score` (rubric), `choice` (options), or `noul` (yes/no probability) | `score()`, `choice()`, `noul()` |
+| **Question** | A typed question: `score` (rubric), `choice` (options), or `noul` (yes/no probability; "noul" is Jev's own name for that question type) | `score()`, `choice()`, `noul()` |
 | **Decider** | Anything that answers typed questions: Jev via TypeSafe, a mock, or your own implementation | `Decider` |
 | **Policy** | Thresholds and stability rules, all in code | `Policy`, `defaultPolicy` |
 | **Decision** | What to render: fixed ids, ranked adaptive items, at most one alert, suggestions, reasons | `Decision` |
@@ -413,7 +413,7 @@ These two define surfaces and fixtures. For something you can run:
 4. **Small context per call.** Each call gets only the signals its questions need.
 5. **One question, one dimension.** Rubric levels describe situations, not adjectives.
 6. **Stability over cleverness.** Fixed first scroll, few swaps per visit, hysteresis, pins.
-7. **There is always a fallback.** Cache → default order → static screen. Never an empty slot.
+7. **There is always a fallback.** Cached decision → default order. Errors and timeouts never block rendering. A last-resort screen is up to your app.
 8. **Every decision is explainable and logged.** Reasons come from templates; logs feed replay.
 
 More: [docs/writing-questions.md](docs/writing-questions.md) · [docs/architecture.md](docs/architecture.md).
